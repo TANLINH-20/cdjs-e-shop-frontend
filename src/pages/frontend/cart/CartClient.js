@@ -90,9 +90,9 @@ const CartClient = () => {
             <tfoot>
               <tr>
                 <td colSpan="5">
-                  <button className="btn btn-warning me-2"
+                  <button className={`btn btn-warning me-2 ${cart.length === 0 && "disabled"}`}
                   onClick={handleClearAll}>Xoá tất cả</button>
-                  <Link to="/thanh-toan" className="btn btn-outline-primary">
+                  <Link to="/thanh-toan" className={`btn btn-outline-primary ${cart.length === 0 && "disabled"}`}>
                     Thanh toán
                   </Link>
                 </td>
