@@ -23,7 +23,12 @@ const SearchProduct = () => {
     if (searchTerm.trim() !== "") {
       setSearchTerm('');
       setNotResult(""); // Xóa thông báo không có kết quả tìm kiếm
-      navigate(`/timkiem?q=${(searchTerm.trim())}`);
+      navigate(`/timkiem?q=${searchTerm.trim()}`);
+    }
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      handleSearchBtn();
     }
   };
 
@@ -44,7 +49,7 @@ const SearchProduct = () => {
       } else {
         setSearchResult(null);
       }
-    }, 500);
+    }, 200);
 
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
@@ -67,24 +72,28 @@ const SearchProduct = () => {
   }, []);
 
   return (
-    <div className="position-relative" style={{ minWidth: "300px" }}>
-      <form className="d-flex" role="search" onFocus={handleFocus}>
-        <input
-          className="form-control rounded-0 rounded-start"
-          type="search"
-          placeholder="Search"
-          aria-label="Search"
-          value={searchTerm}
-          onChange={handleChange}
-        />
-        <button
+    <div className="position-relative" style={{ minWidth: "300px" , maxWidth: "500px"}}>
+      <div className="">
+      <button
           type="button"
+          style={{borderColor: "transparent"}}
           onClick={handleSearchBtn}
-          className="btn btn-outline-secondary px-3 btn-sm rounded-0 rounded-end"
+          className="btn btn-outline-none rounded-0 rounded-start-3 position-absolute top-0 start-0"
         >
           <BsSearch />
         </button>
-      </form>
+        <input
+          className="form-control rounded-3"
+          style={{paddingLeft: "44px"}}
+          type="search"
+          placeholder="Tìm kiếm sản phẩm..."
+          aria-label="Search"
+          value={searchTerm}
+          onFocus={handleFocus}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+        />
+      </div>
       {showResults && (
         <div
           ref={searchResultRef}

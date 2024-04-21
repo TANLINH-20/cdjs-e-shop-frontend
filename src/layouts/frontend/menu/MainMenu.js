@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import MenuService from "../../../services/MenuService";
 import MainMenuItem from "./MainMenuItem";
 import Logo from "../../../assets/logo_tanlinh_clother-01.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SearchProduct from "../search/SearchProduct";
-import { RiShoppingCartLine } from "react-icons/ri";
+import { useCart } from "../../../utils/Cart";
+import { FaShoppingBag } from "react-icons/fa";
 
 const MainMenu = () => {
   const [menus, setMenus] = useState([]);
+  const { cart } = useCart();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -47,13 +50,18 @@ const MainMenu = () => {
           </ul>
           <ul className="navbar-nav mb-2 mb-lg-0 me-5">
             <li className="nav-item">
-              <li className="nav-item fs-1 mb-2">
-                <Link
-                  to="/gio-hang"
-                  className="text-decoration-none text-dark"
+              <li className="nav-item">
+                <div
+                  onClick={() => {
+                    navigate("/gio-hang");
+                  }}
+                  className="btn btn-outline-dark position-relative fs-4"
                 >
-                  <RiShoppingCartLine/>
-                </Link>
+                  <FaShoppingBag className="fs-1"/>
+                  <div className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {cart.length}
+                  </div>
+                </div>
               </li>
             </li>
           </ul>
