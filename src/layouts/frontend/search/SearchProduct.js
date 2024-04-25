@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import ProductService from "../../../services/ProductService";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { urlImage } from "../../../config";
 const SearchProduct = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,9 +11,10 @@ const SearchProduct = () => {
   const searchResultRef = useRef(null);
   const navigate = useNavigate();
   const handleChange = (e) => {
-    setSearchTerm(e.target.value);
-    setShowResults(true); // Hiển thị danh sách kết quả khi nhập liệu
-    setNotResult(""); // Xóa thông báo không có kết quả tìm kiếm
+    const value = e.target.value;
+    setSearchTerm(value);
+    setShowResults(true);
+    setNotResult("");
   };
   const handleFocus = () => {
     setShowResults(true); // Hiển thị danh sách kết quả khi click vào input
@@ -21,9 +22,9 @@ const SearchProduct = () => {
   };
   const handleSearchBtn = () => {
     if (searchTerm.trim() !== "") {
-      setSearchTerm('');
+      setSearchTerm("");
       setNotResult(""); // Xóa thông báo không có kết quả tìm kiếm
-      navigate(`/timkiem?q=${searchTerm.trim()}`);
+      navigate(`/timkiem?q=${encodeURIComponent(searchTerm.trim())}`);
     }
   };
   const handleKeyDown = (e) => {
@@ -34,10 +35,10 @@ const SearchProduct = () => {
 
   useEffect(() => {
     const timeoutId = setTimeout(async () => {
-      if (searchTerm !== "") {
+      if (searchTerm.trim() !== "" && searchTerm.indexOf("/") === -1 && searchTerm.indexOf("\\") === -1) {
         try {
           const getSearchResult = new Promise(async (resolve, reject) => {
-            const data = await ProductService.list_product_search(searchTerm);
+            const data = await ProductService.list_product_search(searchTerm.trim());
             resolve(data);
           });
           const searchResultData = await getSearchResult;
@@ -47,6 +48,7 @@ const SearchProduct = () => {
           console.error("Error fetching search results:", error);
         }
       } else {
+        setNotResult("No results found"); // Không có kết quả tìm kiếm
         setSearchResult(null);
       }
     }, 200);
@@ -72,11 +74,14 @@ const SearchProduct = () => {
   }, []);
 
   return (
-    <div className="position-relative" style={{ minWidth: "300px" , maxWidth: "500px"}}>
+    <div
+      className="position-relative"
+      style={{ minWidth: "300px", maxWidth: "500px" }}
+    >
       <div className="">
-      <button
+        <button
           type="button"
-          style={{borderColor: "transparent"}}
+          style={{ borderColor: "transparent" }}
           onClick={handleSearchBtn}
           className="btn btn-outline-none rounded-0 rounded-start-3 position-absolute top-0 start-0"
         >
@@ -84,7 +89,7 @@ const SearchProduct = () => {
         </button>
         <input
           className="form-control rounded-3"
-          style={{paddingLeft: "44px"}}
+          style={{ paddingLeft: "44px" }}
           type="search"
           placeholder="Tìm kiếm sản phẩm..."
           aria-label="Search"
@@ -103,8 +108,9 @@ const SearchProduct = () => {
           {searchResult && searchResult.length > 0 ? (
             searchResult.map((product) => {
               return (
-                <Link
-                  to={`/san-pham/${product.slug}`}
+                <div
+                  key={product.id}
+                  navigate={`/sanpham/${product.slug}?`}
                   className="d-flex justify-content-center align-items-center text-dark text-decoration-none border-dark-subtle border border-bottom-0"
                 >
                   <div className="col-md-4 p-3">
@@ -129,7 +135,7 @@ const SearchProduct = () => {
                       </p>
                     )}
                   </div>
-                </Link>
+                </div>
               );
             })
           ) : (

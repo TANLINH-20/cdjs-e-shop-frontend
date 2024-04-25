@@ -18,22 +18,20 @@ const ProductList = () => {
   const pathname = location.pathname;
   const searchParams = new URLSearchParams(location.search);
   const searchTerm = searchParams.get("q");
-  console.log(location);
-  console.log(searchTerm);
   useEffect(() => {
     setCurrentPage(1); // Reset current page to 1 when changing location
   }, [location]);
 
   useEffect(() => {
     (async () => {
-      if (pathname === "/timkiem") {
+      if (pathname === "/timkiem" && searchTerm.trim() !== "" && searchTerm.indexOf("/") === -1 && searchTerm.indexOf("\\") === -1) {
         const result = await ProductService.list_product_search_by_page(
           searchTerm,
           currentPage,
           itemPage
         );
         setProducts(result.products);
-        const temp = await ProductService.list_product_search(searchTerm);
+        const temp = await ProductService.list_product_search(searchTerm.trim());
         setLengthPro(temp.products);
         setTotalPages(Math.ceil(lengthPro.length / itemPage));
       } else if (pathname === "/tat-ca-san-pham") {
